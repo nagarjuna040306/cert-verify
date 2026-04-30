@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexChain Validator | Certificate Verification System</title>
+    <meta name="description" content="Secure and immutable student certificate verification on the blockchain.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;800&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-effects">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fa-solid fa-link"></i> NexChain
+        </div>
+        <ul class="nav-links">
+            <li><button class="nav-btn active" data-target="issue-section"><i class="fa-solid fa-file-signature"></i> Issue</button></li>
+            <li><button class="nav-btn" data-target="verify-section"><i class="fa-solid fa-shield-check"></i> Verify</button></li>
+            <li><button class="nav-btn" data-target="ledger-section"><i class="fa-solid fa-cubes"></i> App Ledger</button></li>
+            <li><button id="logout-btn" class="nav-btn hidden" style="color: var(--danger);"><i class="fa-solid fa-sign-out-alt"></i> Logout</button></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <!-- 1. Issue Certificate Section -->
+        <section id="issue-section" class="tab-content active view-transition">
+            <!-- Login Portal -->
+            <div id="login-portal" class="card glass-panel">
+                <div class="card-header">
+                    <h2>College Login</h2>
+                    <p>Log in with your institution credentials to issue certificates.</p>
+                </div>
+                <div class="card-body">
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label for="login-username">Username</label>
+                            <input type="text" id="login-username" required placeholder="e.g., admin">
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <input type="password" id="login-password" required placeholder="e.g., password">
+                        </div>
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-sign-in-alt"></i> Login</button>
+                    </form>
+                    <div id="login-error" class="alert hidden" style="background: var(--danger-bg); border-color: var(--danger); color: var(--danger); margin-top: 1rem; padding: 1rem;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Invalid credentials. Try admin / password.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Issue Form (Hidden until logged in) -->
+            <div id="issue-portal" class="card glass-panel hidden">
+                <div class="card-header">
+                    <h2>Issue New Certificate</h2>
+                    <p>Mint a secure, immutable certificate to the NexChain blockchain.</p>
+                </div>
+                <div class="card-body">
+                    <form id="issue-form">
+                        <div class="form-group">
+                            <label for="studentName">Student Name</label>
+                            <input type="text" id="studentName" required placeholder="e.g., Alice Johnson">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="courseName">Course Name</label>
+                                <input type="text" id="courseName" required placeholder="e.g., B.S. Computer Science">
+                            </div>
+                            <div class="form-group">
+                                <label for="graduationDate">Graduation Date</label>
+                                <input type="date" id="graduationDate" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="issuerInstitution">Issuer Institution</label>
+                            <input type="text" id="issuerInstitution" required readonly style="background: rgba(255,255,255,0.05); color: var(--success);">
+                        </div>
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-hammer"></i> Mint Certificate</button>
+                    </form>
+                    
+                    <div id="issue-success" class="alert success hidden">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <div>
+                            <h4>Certificate Minted Successfully!</h4>
+                            <p>Certificate Unique ID (Share this):</p>
+                            <code id="new-cert-id"></code>
+                            <button class="btn-icon" onclick="copyToClipboard('new-cert-id')" title="Copy to clipboard"><i class="fa-solid fa-copy"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Verify Certificate Section -->
+        <section id="verify-section" class="tab-content view-transition">
+            <div class="card glass-panel">
+                <div class="card-header">
+                    <h2>Verify Certificate</h2>
+                    <p>Enter the Certificate unique short ID to verify authenticity.</p>
+                </div>
+                <div class="card-body">
+                    <form id="verify-form">
+                        <div class="form-group">
+                            <label for="searchHash">Certificate Unique ID</label>
+                            <div class="search-bar">
+                                <input type="text" id="searchHash" required placeholder="e.g., CERT-XXXXXX">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> Verify</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Results Area -->
+                    <div id="verify-result" class="result-area hidden">
+                        <!-- Content injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Blockchain Ledger Section -->
+        <section id="ledger-section" class="tab-content view-transition">
+            <div class="card glass-panel">
+                <div class="card-header">
+                    <h2>Blockchain Ledger</h2>
+                    <p>Live view of the immutable certificate blocks.</p>
+                </div>
+                <div class="card-body" style="background: transparent;">
+                    <div class="blockchain-container" id="blockchain-blocks">
+                        <!-- Blocks injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="blockchain.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
